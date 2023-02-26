@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit&display=swap');
+
+
+*{
+  color:#101419;
+  margin : 0;
+  padding: 0;
+  box-sizing: 0;
+  font-family:'outfit', sans-serif;
+
+}
+
+.container{
+  display:flex;
+  overflow: hidden;
+  height: 100vh;
+}
+.inputs {
+  width:  40%;
+  height: 100vh ;
+  align-items: center;
+  display: flex;
+  gap : 50px;
+  flex-direction: column;
+  background-color:#7681B3;
+  box-shadow: 4px 0 8px 0 rgba(0, 0, 0, 0.2), 6px 0 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#title{
+  background-color: #7681B3;
+  text-transform: uppercase;
+  font-size: 40px;
+  font-weight:bold;
+  text-align: center;
+  margin-top: 50px;
+}
+.bodystyle{
+  background-color: #7681B3;
+  font-size: 20px;
+  text-align: left;
+  text-transform: capitalize;
+  padding-bottom: 5px;
+}
+.box{
+  background-color: #7681B3;
+
+}
+Button{
+  font-size: 15px;
+  text-transform: uppercase;
+  padding-left :20px;
+  padding-right: 20px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border-radius: 30px;
+  border-width: 0px;
+  background-color: #6f73d2;
+  box-shadow: 0px 0px 8px 0 rgba(0, 0, 0, 0.2), 0px 0px 20px 0 rgba(0, 0, 0, 0.19)
+}
+Button:hover{
+  color: whitesmoke;
+  box-shadow: 0px 0px 4px 1px whitesmoke;
+  
+}
+.input-box{
+  background-color: #7681B3;
+  margin: auto;
+}
+
+input{
+  font-size: 15px;
+  text-transform: capitalize;
+  text-align: left;
+  padding-left :20px;
+  padding-right: 40px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  border-radius: 30px;
+  border-width: 0px;
+  background-color: #F7F7F9;
+}
+
+.button-box{
+  margin-left:-25px;
+}
+
+.two-buttons{
+  text-align: center;
+  background-color: #7681B3;
+  margin-bottom: 20px;
+}
+
+#stock-Price-button{
+  margin-right: 20px;
+
+}
+#indicator-button{
+  margin-left: 20px;
+}
+.content {
+  width:  60%;
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content:flex-start;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.header{
+  font-size: 30px;
+  margin-top: 10px;
+
+}
+
+#description{
+  font-size: 10px;
+  text-align: center;
+}
+
+.graph{
+  text-align: center;
+}
+
