@@ -1,5 +1,6 @@
 import dash
 from dash import dcc, html, Input, Output, State
+from dash.exceptions import PreventUpdate
 from datetime import datetime as dt
 from datetime import date
 import yahooquery as yq
@@ -83,7 +84,30 @@ item2 = html.Div(
 
     ], className="content")
 
-app.layout = html.Div([item1, item2], className="container")
+app.layout = html.Div([
+    dcc.ConfirmDialog(
+        id='error_box',
+        message='please enter a valid stock code',
+    ),
+    item1,
+    item2
+], className="container")
+
+
+def isStockCodeValid(code):
+    list_of_tickers = pd.read_csv("nasdaq_screener_1677687014270.csv")["Symbol"]
+    if code in list_of_tickers.values:
+        return True
+
+
+@app.callback(Output('error_box', 'displayed'),
+              Input(component_id="stock-code-button", component_property="n_clicks"),
+              State(component_id="stock-code-input", component_property="value")
+              )
+def display_confirm(n_clicks, value):
+    if isStockCodeValid(value) or n_clicks == 0:
+        return False
+    return True
 
 
 @app.callback(
@@ -93,12 +117,15 @@ app.layout = html.Div([item1, item2], className="container")
     [State(component_id="stock-code-input", component_property="value")]
 )
 def get_company_info(times_clicked, stock_code):
-    ticker = yq.Ticker(stock_code)
-    inf_1 = ticker.asset_profile
-    inf_2 = ticker.price
-    df_1 = pd.DataFrame().from_dict(inf_1, orient="index")
-    df_2 = pd.DataFrame().from_dict(inf_2, orient="index")
-    return df_2.at[df_2.index[0], 'shortName'], df_1.at[df_1.index[0], 'longBusinessSummary']
+    if isStockCodeValid(stock_code):
+        ticker = yq.Ticker(stock_code)
+        inf_1 = ticker.asset_profile
+        inf_2 = ticker.price
+        df_1 = pd.DataFrame().from_dict(inf_1, orient="index")
+        df_2 = pd.DataFrame().from_dict(inf_2, orient="index")
+        return df_2.at[df_2.index[0], 'shortName'], df_1.at[df_1.index[0], 'longBusinessSummary']
+    else:
+        raise PreventUpdate
 
 
 # user defined function that returns stock figure from DataFrame
@@ -119,10 +146,13 @@ def get_stock_price_fig(df):
     [State(component_id="stock-code-input", component_property="value")]
 )
 def get_stock_price_plot(start_date, end_date, times_clicks, stock_code):
-    df = yq.Ticker(stock_code).history(start=start_date, end=end_date)
-    df.reset_index(inplace=True)
-    fig = get_stock_price_fig(df)
-    return dcc.Graph(figure=fig)
+    if times_clicks >= 1:
+        df = yq.Ticker(stock_code).history(start=start_date, end=end_date)
+        df.reset_index(inplace=True)
+        fig = get_stock_price_fig(df)
+        return dcc.Graph(figure=fig)
+    else:
+        raise PreventUpdate
 
 
 # user defines function that return indicator  figure
@@ -145,10 +175,13 @@ def get_more(df):
     [State(component_id="stock-code-input", component_property="value")]
 )
 def get_indicator_plot(start_date, end_date, times_clicks, stock_code):
-    df = yq.Ticker(stock_code).history(start=start_date, end=end_date)
-    df.reset_index(inplace=True)
-    fig = get_more(df)
-    return dcc.Graph(figure=fig)
+    if times_clicks >= 1:
+        df = yq.Ticker(stock_code).history(start=start_date, end=end_date)
+        df.reset_index(inplace=True)
+        fig = get_more(df)
+        return dcc.Graph(figure=fig)
+    else:
+        raise PreventUpdate
 
 
 if __name__ == '__main__':
