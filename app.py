@@ -6,9 +6,11 @@ from datetime import date
 import yahooquery as yq
 import pandas as pd
 import plotly.graph_objs as go
+import model
 import plotly.express as px
 
 app = dash.Dash(__name__)
+app.title = "Dash stocks"
 server = app.server
 
 item1 = html.Div(
@@ -55,10 +57,11 @@ item1 = html.Div(
                     placeholder='Enter number of days',
                     type='text',
                     value='',
+                    id='n_days',
                     className="input-space"
                 ),
                 # forecast button
-                html.Button('Forecast', className='button-box', n_clicks=0),
+                html.Button('Forecast', id="Forecast-button", className='button-box', n_clicks=0),
             ], className="input-box")
 
         ], className="box")
@@ -67,10 +70,11 @@ item2 = html.Div(
     [
         html.Div([
             # company name
-        ], id="header-id", className="header"),
+        ], id="header-id", className="header", style={'display': 'none'}
+        ),
         html.Div(
             # description
-            id="description", className="description_ticker"
+            id="description", className="description_ticker", style={'display': 'none'}
         ),
         html.Div([
             # stock price plot
@@ -96,7 +100,7 @@ app.layout = html.Div([
 
 def isStockCodeValid(code):
     list_of_tickers = pd.read_csv("nasdaq_screener_1677687014270.csv")["Symbol"]
-    if code in list_of_tickers.values:
+    if code.upper() in list_of_tickers.values:
         return True
 
 
@@ -112,7 +116,9 @@ def display_confirm(n_clicks, value):
 
 @app.callback(
     [Output(component_id="header-id", component_property="children"),
-     Output("description", "children")],
+     Output("description", "children"),
+     Output("header-id", "style"),
+     Output("description", "style")],
     [Input(component_id="stock-code-button", component_property="n_clicks")],
     [State(component_id="stock-code-input", component_property="value")]
 )
@@ -123,7 +129,8 @@ def get_company_info(times_clicked, stock_code):
         inf_2 = ticker.price
         df_1 = pd.DataFrame().from_dict(inf_1, orient="index")
         df_2 = pd.DataFrame().from_dict(inf_2, orient="index")
-        return df_2.at[df_2.index[0], 'shortName'], df_1.at[df_1.index[0], 'longBusinessSummary']
+        return df_2.at[df_2.index[0], 'shortName'], df_1.at[df_1.index[0], 'longBusinessSummary'], {
+            'display': 'block'}, {'display': 'block'}
     else:
         raise PreventUpdate
 
@@ -179,6 +186,31 @@ def get_indicator_plot(start_date, end_date, times_clicks, stock_code):
         df = yq.Ticker(stock_code).history(start=start_date, end=end_date)
         df.reset_index(inplace=True)
         fig = get_more(df)
+        return dcc.Graph(figure=fig)
+    else:
+        raise PreventUpdate
+
+
+def get_forecast_fig(df, n, stock_code):
+    fig = px.line(df,
+                  x=[i for i in range(n)],
+                  y=[model.svr_model(n, stock_code, "close"), model.svr_model(n, stock_code, "open")],
+                  title="Forecasted Closing and Opening Price for \"n\" days vs Date"
+                  )
+    return fig
+
+
+@app.callback(
+    Output("forecast-content", "children"),
+    [Input("Forecast-button", "n_clicks")],
+    [State(component_id="n_days", component_property="value"),
+     State(component_id="stock-code-input", component_property="value")]
+)
+def get_forecast_plot(times_clicks, n_days, stock_code):
+    if times_clicks >= 1:
+        df = yq.Ticker(stock_code).history(period=n_days, interval="1d")
+        df.reset_index(inplace=True)
+        fig = get_forecast_fig(df, int(n_days), stock_code)
         return dcc.Graph(figure=fig)
     else:
         raise PreventUpdate
