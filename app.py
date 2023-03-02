@@ -5,7 +5,6 @@ from datetime import datetime as dt
 from datetime import date
 import yahooquery as yq
 import pandas as pd
-import plotly.graph_objs as go
 import model
 import plotly.express as px
 
