@@ -7,13 +7,13 @@ This web application, built using Python Dash, allows users to visualize and for
 To run this web application locally, follow these steps:
 
 1. Clone the repository:
-`git clone https://github.com/oumaimaoys/visualization_and_forecasting_stocks.git`
+```git clone https://github.com/oumaimaoys/visualization_and_forecasting_stocks.git```
 
 2. Navigate to the project directory:
-`cd visualization_and_forecasting_stock`
+```cd visualization_and_forecasting_stock```
 
 3. Install the required dependencies:
-`pip install -r requirements.txt`
+```pip install -r requirements.txt```
 
-4.Start the web app
-`python app.py`
+4. Start the web app
+```python app.py```
