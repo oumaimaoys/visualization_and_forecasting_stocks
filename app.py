@@ -5,7 +5,7 @@ from datetime import datetime as dt
 from datetime import date
 import yahooquery as yq
 import pandas as pd
-import model
+import src.model as model
 import plotly.express as px
 
 app = dash.Dash(__name__)
@@ -36,7 +36,7 @@ item1 = html.Div(
             dcc.DatePickerRange(
                 id='my_date_picker_range',
                 min_date_allowed=date(1990, 1, 1),
-                max_date_allowed=date(2022, 12, 31),
+                max_date_allowed=date(2030, 12, 31),
                 initial_visible_month=dt.today(),
                 end_date=dt.today()
             ),
@@ -98,7 +98,7 @@ app.layout = html.Div([
 
 
 def isStockCodeValid(code):
-    list_of_tickers = pd.read_csv("nasdaq_screener_1677687014270.csv")["Symbol"]
+    list_of_tickers = pd.read_csv("data/nasdaq_screener_1677687014270.csv")["Symbol"]
     if code.upper() in list_of_tickers.values:
         return True
 
@@ -194,7 +194,7 @@ def get_forecast_fig(df, n, stock_code):
     fig = px.line(df,
                   x=[i for i in range(n)],
                   y=[model.svr_model(n, stock_code, "close"), model.svr_model(n, stock_code, "open")],
-                  title="Forecasted Closing and Opening Price for \"n\" days vs Date"
+                  title="Forecasted Closing and Opening Price for" + n + "days vs Date"
                   )
     return fig
 

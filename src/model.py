@@ -1,10 +1,8 @@
-from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVR
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 import yahooquery as yq
 import numpy as np
-import datetime as dt
 
 
 def svr_model(n, stock_code, column):
